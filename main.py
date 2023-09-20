@@ -2,16 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# def read_signal_frequency():
-#     while True:
-#         entered_string = input('Введите целую частоту сигнала в Гц: ')
-#         try:
-#             signal_frequency = int(entered_string)
-#             return signal_frequency
-#         except ValueError:
-#             print("Ошибка: Введенная строка не является целым числом. Пожалуйста, попробуйте снова.")
-
-
 def build_graph(type_signal, graph_number, t, signal, frequencies, signal_spectrum):
     plt.subplot(2, 2, graph_number)
     plt.plot(t, signal)
@@ -19,22 +9,25 @@ def build_graph(type_signal, graph_number, t, signal, frequencies, signal_spectr
     plt.xlabel('Время, с')
     plt.ylabel('Амплитуда')
 
+    signal_spectrum[0] = 0
     title_spectrum_graph = 'Спектр ' + type_signal[0].lower() + type_signal[1: -2] + 'ого сигнала'
+
     plt.subplot(2, 2, graph_number + 1)
-    plt.plot(frequencies, np.abs(signal_spectrum))
+    plt.plot(frequencies[:len(frequencies) // 2], np.abs(signal_spectrum[:len(signal_spectrum) // 2]))
     plt.title(title_spectrum_graph)
     plt.xlabel('Частота, Гц')
+    plt.xlim(0, 50)
     plt.ylabel('Амплитуда')
 
 
 def calculate_spectra_and_build_graphs(frequency):
     duration = 1
-    sampling_rate = 500
+    sampling_rate = 1000
 
     t = np.linspace(0, duration, sampling_rate * duration)
 
     harmonic_signal = np.sin(2 * np.pi * frequency * t)
-    digital_signal = np.sign(harmonic_signal)
+    digital_signal = np.where(harmonic_signal > 0, 1, 0)
 
     harmonic_signal_spectrum = np.fft.fft(harmonic_signal)
     frequencies_for_harmonic_signal_spectrum = np.fft.fftfreq(len(harmonic_signal_spectrum), 1 / sampling_rate)
